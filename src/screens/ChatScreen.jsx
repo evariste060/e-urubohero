@@ -1,7 +1,7 @@
 import { useState, useRef, useEffect } from 'react'
 import { Send, Leaf, MapPin, ArrowLeft, Phone } from 'lucide-react'
 import { useAppStore } from '../store/useAppStore'
-import { sendMessageDemo } from '../services/agasazaService'
+import { sendMessage, sendMessageDemo } from '../services/agasazaService'
 
 function Avatar({ size = 32 }) {
   return (
@@ -82,13 +82,19 @@ export default function ChatScreen() {
     if (!content) return
     setInput('')
     if (textareaRef.current) textareaRef.current.style.height = 'auto'
+    const history = [...messages, { role: 'user', content }]
     addMessage({ role: 'user', content })
     setTyping(true)
     try {
-      const reply = await sendMessageDemo(content)
+      const reply = await sendMessage(history)
       addMessage({ role: 'assistant', content: reply })
     } catch {
-      addMessage({ role: 'assistant', content: 'Mbabarira, habaye ikibazo. Gerageza nanone.' })
+      try {
+        const reply = await sendMessageDemo(content)
+        addMessage({ role: 'assistant', content: reply })
+      } catch {
+        addMessage({ role: 'assistant', content: 'Mbabarira, habaye ikibazo. Gerageza nanone.' })
+      }
     } finally {
       setTyping(false)
     }
