@@ -1,5 +1,6 @@
 import { useState, useRef, useEffect } from 'react'
 import { Send, Leaf, MapPin, ArrowLeft, Phone } from 'lucide-react'
+import ReactMarkdown from 'react-markdown'
 import { useAppStore } from '../store/useAppStore'
 import { sendMessage, sendMessageDemo } from '../services/agasazaService'
 
@@ -14,6 +15,19 @@ function Avatar({ size = 32 }) {
       <Leaf size={Math.round(size * 0.42)} color="#E9C46A" />
     </div>
   )
+}
+
+const markdownComponents = {
+  p: ({ children }) => <p style={{ margin: '0 0 6px 0' }}>{children}</p>,
+  strong: ({ children }) => <strong style={{ fontWeight: 700 }}>{children}</strong>,
+  ul: ({ children }) => <ul style={{ margin: '4px 0', paddingLeft: 18 }}>{children}</ul>,
+  ol: ({ children }) => <ol style={{ margin: '4px 0', paddingLeft: 18 }}>{children}</ol>,
+  li: ({ children }) => <li style={{ marginBottom: 3 }}>{children}</li>,
+  a: ({ href, children }) => (
+    <a href={href} target="_blank" rel="noreferrer" style={{ color: '#2D6A4F', textDecoration: 'underline' }}>
+      {children}
+    </a>
+  ),
 }
 
 function Bubble({ msg }) {
@@ -32,7 +46,11 @@ function Bubble({ msg }) {
         boxShadow: isUser ? '0 3px 10px rgba(45,106,79,0.22)' : '0 2px 8px rgba(0,0,0,0.07)',
         border: isUser ? 'none' : '1px solid #eef5f1',
       }}>
-        {msg.content}
+        {isUser ? msg.content : (
+          <ReactMarkdown components={markdownComponents}>
+            {msg.content}
+          </ReactMarkdown>
+        )}
       </div>
     </div>
   )
